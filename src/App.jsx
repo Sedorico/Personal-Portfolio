@@ -39,7 +39,7 @@ function App() {
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.1 }  // Pinalitan mula 0.3 gawing 0.1
     );
 
     sectionElements.forEach(section => observerRef.current.observe(section));
@@ -49,7 +49,7 @@ function App() {
         observerRef.current.disconnect();
       }
     };
-  }, [showMainContent]); // Inalis ang currentSection dito
+  }, [showMainContent]);
 
   useEffect(() => {
     if (showMainContent) {
@@ -111,8 +111,6 @@ function App() {
 
   return (
     <>
-      
-      
       <GlobalGradient />
       <GlobalCircuitBG 
         isTransitioning={isTransitioning} 
@@ -136,7 +134,7 @@ function App() {
           <div id="home">
             <About />
           </div>
-          <div id="projects">
+          <div id="projects" style={{ minHeight: "100vh" }}>
             <Projects />
           </div>
           <div id="education">

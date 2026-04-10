@@ -44,11 +44,11 @@ const projects = [
   {
     number: "07", title: "OBRAKADA Blog Website",
     category: "Web Development",
-    description: "A social blogging platform with real-time posting, user interaction, and friend-based networking—designed like a modern fusion of content sharing and community buildingrsonal portfolio with dynamic content, GSAP scroll animations, 3D elements via Three.js, and a custom cursor. The one you're looking at.",
+    description: "A social blogging platform with real-time posting, user interaction, and friend-based networking—designed like a modern fusion of content sharing and community building.",
     accent: "#60A5FA", tags: ["React", "GSAP", "Vite"], year: "2024",
   },
   {
-    number: "08", title: "Ping Pong Pygame Game ",
+    number: "08", title: "Ping Pong Pygame Game",
     category: "Game Development",
     description: "A 2D ping pong game built using Pygame, featuring real-time paddle mechanics, ball physics, and competitive gameplay.",
     accent: "#F87171", tags: ["Python", "Pygame", "2D"], year: "2023",
@@ -57,20 +57,20 @@ const projects = [
 
 // ─── Single full-height project panel ─────────────────────────────────────────
 function ProjectPanel({ project, index }) {
-  const panelRef  = useRef(null);
-  const maskRef   = useRef(null);
-  const numRef    = useRef(null);
-  const lineRef   = useRef(null);
-  const leftRef   = useRef(null);
-  const rightRef  = useRef(null);
-  const isEven    = index % 2 === 0;
+  const panelRef = useRef(null);
+  const maskRef = useRef(null);
+  const numRef = useRef(null);
+  const lineRef = useRef(null);
+  const leftRef = useRef(null);
+  const rightRef = useRef(null);
+  const isEven = index % 2 === 0;
 
   useEffect(() => {
-    const el    = panelRef.current;
-    const mask  = maskRef.current;
-    const num   = numRef.current;
-    const line  = lineRef.current;
-    const left  = leftRef.current;
+    const el = panelRef.current;
+    const mask = maskRef.current;
+    const num = numRef.current;
+    const line = lineRef.current;
+    const left = leftRef.current;
     const right = rightRef.current;
 
     // ── ENTER timeline ───────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ function ProjectPanel({ project, index }) {
       )
       .fromTo(num,
         { opacity: 0, scale: 1.25, filter: "blur(24px)" },
-        { opacity: 1, scale: 1,    filter: "blur(0px)", duration: 1.0, ease: "power3.out" },
+        { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.0, ease: "power3.out" },
         "-=0.35"
       )
       .fromTo(line,
@@ -105,7 +105,7 @@ function ProjectPanel({ project, index }) {
     const exitTl = gsap.timeline({ paused: true });
     exitTl
       .to([left, right], { opacity: 0, y: -40, duration: 0.38, ease: "power2.in", stagger: 0.06 })
-      .to(num,  { opacity: 0, scale: 0.8, filter: "blur(16px)", duration: 0.35, ease: "power2.in" }, "-=0.25")
+      .to(num, { opacity: 0, scale: 0.8, filter: "blur(16px)", duration: 0.35, ease: "power2.in" }, "-=0.25")
       .to(line, { scaleX: 0, duration: 0.28, ease: "power2.in" }, "-=0.28")
       .fromTo(mask,
         { scaleX: 0, transformOrigin: isEven ? "right center" : "left center" },
@@ -116,11 +116,11 @@ function ProjectPanel({ project, index }) {
     const st = ScrollTrigger.create({
       trigger: el,
       start: "top 72%",
-      end:   "bottom 28%",
-      onEnter:      () => { exitTl.pause(0); enterTl.restart(); },
-      onEnterBack:  () => { exitTl.pause(0); enterTl.restart(); },
-      onLeave:      () => { enterTl.pause(); exitTl.restart(); },
-      onLeaveBack:  () => { enterTl.pause(); exitTl.restart(); },
+      end: "bottom 28%",
+      onEnter: () => { exitTl.pause(0); enterTl.restart(); },
+      onEnterBack: () => { exitTl.pause(0); enterTl.restart(); },
+      onLeave: () => { enterTl.pause(); exitTl.restart(); },
+      onLeaveBack: () => { enterTl.pause(); exitTl.restart(); },
     });
 
     return () => st.kill();
@@ -161,7 +161,7 @@ function ProjectPanel({ project, index }) {
         {project.number}
       </div>
 
-      {/* Dark backdrop — zIndex 2 so it covers ghost number (1) but sits under content */}
+      {/* Dark backdrop */}
       <div style={{
         position: "absolute", inset: 0,
         background: "rgba(6, 6, 10, 0.82)",
@@ -255,8 +255,6 @@ function ProjectPanel({ project, index }) {
             marginBottom: "2rem",
             transformOrigin: isEven ? "left center" : "right center",
           }} />
-
-
         </div>
 
         {/* ── RIGHT ── */}
@@ -295,14 +293,14 @@ function ProjectPanel({ project, index }) {
             rel="noopener noreferrer"
             style={{ display: "inline-flex", alignItems: "center", gap: "16px", cursor: "pointer", width: "fit-content", textDecoration: "none" }}
             onMouseEnter={e => {
-              e.currentTarget.querySelector(".cta-line").style.width  = "55px";
-              e.currentTarget.querySelector(".cta-text").style.color  = "#ffffff";
+              e.currentTarget.querySelector(".cta-line").style.width = "55px";
+              e.currentTarget.querySelector(".cta-text").style.color = "#ffffff";
               e.currentTarget.querySelector(".cta-arrow").style.transform = "translateX(8px)";
               e.currentTarget.querySelector(".cta-arrow").style.color = project.accent;
             }}
             onMouseLeave={e => {
-              e.currentTarget.querySelector(".cta-line").style.width  = "28px";
-              e.currentTarget.querySelector(".cta-text").style.color  = "rgba(255,255,255,0.28)";
+              e.currentTarget.querySelector(".cta-line").style.width = "28px";
+              e.currentTarget.querySelector(".cta-text").style.color = "rgba(255,255,255,0.28)";
               e.currentTarget.querySelector(".cta-arrow").style.transform = "translateX(0)";
               e.currentTarget.querySelector(".cta-arrow").style.color = "rgba(255,255,255,0.28)";
             }}
@@ -334,7 +332,7 @@ function ProjectPanel({ project, index }) {
         </div>
       </div>
 
-      {/* Wipe mask — covers entire panel, slides away on enter */}
+      {/* Wipe mask */}
       <div ref={maskRef} style={{
         position: "absolute", inset: 0,
         background: "#080808",
@@ -347,12 +345,12 @@ function ProjectPanel({ project, index }) {
 // ─── Section wrapper ───────────────────────────────────────────────────────────
 const Projects = () => {
   const sectionRef = useRef(null);
-  const headerRef  = useRef(null);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const eyebrow = headerRef.current.querySelector(".proj-eyebrow");
-      const title   = headerRef.current.querySelector(".proj-title");
+      const title = headerRef.current.querySelector(".proj-title");
 
       gsap.fromTo(eyebrow,
         { opacity: 0, x: -30 },
@@ -397,7 +395,7 @@ const Projects = () => {
             fontFamily: "'DM Mono', monospace", fontSize: "0.58rem",
             letterSpacing: "0.4em", color: "rgba(255,255,255,0.3)", textTransform: "uppercase",
           }}>
-            {">"} projects.list
+            {'>'} projects.list
           </span>
         </div>
 
