@@ -157,8 +157,8 @@ const Hero = ({ onNavigate, isTransitioning }) => {
 
   const stats = [
     { icon: "🔵", label: "STATUS",         value: "SEEKING OJT", sub: "Available for internship", isPrimary: true  },
-    { icon: "📁", label: "PROJECTS",       value: "8",           sub: "Completed projects",        isPrimary: false },
-    { icon: "🏆", label: "CERTIFICATIONS", value: "5",           sub: "Professional certs",        isPrimary: false },
+    { icon: "🔵", label: "PROJECTS",       value: "8",           sub: "Completed projects",        isPrimary: false },
+    { icon: "🔵", label: "GRADE YEAR",     value: "4TH YEAR",                   isPrimary: false },
   ];
 
   useLayoutEffect(() => {
