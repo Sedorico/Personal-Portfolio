@@ -7,7 +7,6 @@ import Skills from "./components/Skills";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-import GlobalCursor from "./components/GlobalCursor";
 import GlobalCircuitBG from "./components/GlobalCircuitBG";
 import GlobalGradient from "./components/GlobalGradient";
 import "./index.css";
@@ -112,7 +111,7 @@ function App() {
 
   return (
     <>
-      {!showHero && <GlobalCursor />}
+      
       
       <GlobalGradient />
       <GlobalCircuitBG 
