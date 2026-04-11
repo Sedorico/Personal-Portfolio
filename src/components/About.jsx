@@ -134,7 +134,7 @@ function About() {
   };
 
   const handleResume = () => {
-    const resumeUrl = "https://drive.google.com/uc?export=download&id=1du451gsH045dCw9C3d7fD_GaqLPm_27N";
+    const resumeUrl = "https://drive.google.com/file/d/1P8Hn2p4NoUsioTxJYg2w0OalaADiiV88/view?usp=sharing";
     window.open(resumeUrl, "_blank");
   };
 
