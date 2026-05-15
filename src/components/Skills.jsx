@@ -70,39 +70,35 @@ const skills = [
   },
 ];
 
-const CARD_W = 300;
-const CARD_H  = 190;
-const VISIBLE = 4;
+const CARD_W = 340;
+const CARD_H = 220;
 
-// Dragon Club slant: each card offset shifts right + up, all share a ~-15deg tilt
-// offset 0 = active/center, negative = left side, positive = right side
-const getSlot = (offset) => {
-  const abs       = Math.abs(offset);
-  const TILT      = -14;           // base tilt — the Dragon Club signature
-  const STEP_X    = 115;           // horizontal gap between cards
-  const STEP_Y    = -28;           // vertical rise per step (negative = upward)
+// Dragon Club-style fan formation offsets for each card slot
+// Each entry: { x (% from center), y (px from base), rotate (deg), zIndex, scale }
+const FAN_SLOTS = [
+  { x: -52, y: 28,  rotate: -18, zIndex: 1,  scale: 0.82 }, // far left back
+  { x: -30, y: 10,  rotate: -10, zIndex: 2,  scale: 0.88 }, // mid left
+  { x: -12, y: 2,   rotate: -4,  zIndex: 3,  scale: 0.93 }, // near left
+  { x:  0,  y: 0,   rotate:  0,  zIndex: 10, scale: 1.0  }, // CENTER (active)
+  { x:  12, y: 2,   rotate:  4,  zIndex: 3,  scale: 0.93 }, // near right
+  { x:  30, y: 10,  rotate:  10, zIndex: 2,  scale: 0.88 }, // mid right
+  { x:  52, y: 28,  rotate:  18, zIndex: 1,  scale: 0.82 }, // far right back
+];
 
-  return {
-    x:       offset * STEP_X,
-    y:       offset * STEP_Y,
-    rotate:  TILT,                 // all cards same tilt — that's the key!
-    scale:   offset === 0 ? 1.08 : Math.max(0.82, 1 - abs * 0.045),
-    zIndex:  offset === 0 ? 20 : 10 - abs,
-    opacity: offset === 0 ? 1    : Math.max(0.5, 1 - abs * 0.14),
-  };
-};
+// How many cards visible on each side of center
+const VISIBLE_SIDES = 3;
 
 function CardFace({ skill, isCenter }) {
   return (
     <div style={{
       width: "100%", height: "100%",
-      borderRadius: "18px",
+      borderRadius: "20px",
       background: skill.cardBg,
       border: `1px solid ${skill.accentColor}44`,
       boxShadow: isCenter
-        ? `0 28px 70px ${skill.accentColor}55, 0 8px 30px rgba(0,0,0,0.8)`
-        : `0 6px 20px rgba(0,0,0,0.6)`,
-      padding: "1.2rem 1.4rem",
+        ? `0 32px 80px ${skill.accentColor}66, 0 8px 32px rgba(0,0,0,0.7)`
+        : `0 8px 24px rgba(0,0,0,0.5)`,
+      padding: "1.4rem 1.6rem",
       overflow: "hidden",
       display: "flex",
       flexDirection: "column",
@@ -110,9 +106,10 @@ function CardFace({ skill, isCenter }) {
       position: "relative",
       boxSizing: "border-box",
     }}>
+      {/* EMV Chip */}
       <div style={{
-        position: "absolute", top: "1.1rem", right: "1.2rem",
-        width: "36px", height: "26px", borderRadius: "5px",
+        position: "absolute", top: "1.2rem", right: "1.4rem",
+        width: "38px", height: "28px", borderRadius: "5px",
         background: `linear-gradient(135deg, ${skill.chipColor}55, ${skill.chipColor}22)`,
         border: `1px solid ${skill.chipColor}66`,
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
@@ -122,39 +119,43 @@ function CardFace({ skill, isCenter }) {
           <div key={i} style={{ background: `${skill.chipColor}44`, borderRadius: "1px" }} />
         ))}
       </div>
-      <div style={{ width: "44px", height: "44px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {/* Logo */}
+      <div style={{ width: "48px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {skill.logo}
       </div>
+      {/* Bottom info */}
       <div>
-        <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.6rem", letterSpacing: "0.25em", color: skill.mutedColor, marginBottom: "0.4rem" }}>
+        <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.65rem", letterSpacing: "0.25em", color: skill.mutedColor, marginBottom: "0.45rem" }}>
           ···· ···· ···· {skill.abbr.padStart(4, "·")}
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <div>
-            <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.42rem", letterSpacing: "0.2em", color: skill.mutedColor, textTransform: "uppercase", marginBottom: "2px" }}>SKILL NAME</div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "1rem", fontWeight: 700, color: skill.textColor }}>{skill.name}</div>
+            <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.45rem", letterSpacing: "0.2em", color: skill.mutedColor, textTransform: "uppercase", marginBottom: "2px" }}>SKILL NAME</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "1.1rem", fontWeight: 700, color: skill.textColor }}>{skill.name}</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.42rem", letterSpacing: "0.2em", color: skill.mutedColor, textTransform: "uppercase", marginBottom: "2px" }}>LEVEL</div>
-            <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.58rem", color: skill.accentColor }}>{skill.level}</div>
+            <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.45rem", letterSpacing: "0.2em", color: skill.mutedColor, textTransform: "uppercase", marginBottom: "2px" }}>LEVEL</div>
+            <div style={{ fontFamily: "'Fira Code', monospace", fontSize: "0.6rem", color: skill.accentColor }}>{skill.level}</div>
           </div>
         </div>
       </div>
-      <div style={{ position: "absolute", bottom: "0.7rem", left: "1.3rem", width: "6px", height: "6px", borderRadius: "50%", background: skill.accentColor, opacity: 0.85, boxShadow: `0 0 8px ${skill.accentColor}` }} />
+      {/* Status dot */}
+      <div style={{ position: "absolute", bottom: "0.8rem", left: "1.5rem", width: "7px", height: "7px", borderRadius: "50%", background: skill.accentColor, opacity: 0.8, boxShadow: `0 0 8px ${skill.accentColor}` }} />
     </div>
   );
 }
 
 const Skills = () => {
-  const sectionRef = useRef(null);
-  const headerRef  = useRef(null);
-  const cardsRef   = useRef([]);
-  const bottomRef  = useRef(null);
-  const activeRef  = useRef(0);
+  const sectionRef  = useRef(null);
+  const headerRef   = useRef(null);
+  const carouselRef = useRef(null);
+  const cardsRef    = useRef([]);
+  const bottomRef   = useRef(null);
+  const activeRef   = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
-  const timerRef   = useRef(null);
-  const stateRef   = useRef("gathered");
-  const [spread, setSpread]  = useState(false);
+  const timerRef    = useRef(null);
+  const stateRef    = useRef("gathered");
+  const [spread, setSpread] = useState(false);
 
   const goTo = useCallback((idx) => {
     const next = ((idx % skills.length) + skills.length) % skills.length;
@@ -164,60 +165,97 @@ const Skills = () => {
 
   const startTimer = useCallback(() => {
     clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => goTo(activeRef.current + 1), 4000);
+    timerRef.current = setInterval(() => {
+      goTo(activeRef.current + 1);
+    }, 4000);
   }, [goTo]);
 
-  const handleClick = (idx) => { goTo(idx); startTimer(); };
+  const handleClick = (idx) => {
+    goTo(idx);
+    startTimer();
+  };
 
-  // ── Page IN: cards drop one by one from above ─────────────────────────────────
+  // Compute each card's fan slot relative to the active card
+  const getSlotForCard = (i, active) => {
+    const total = skills.length;
+    let offset = i - active;
+    if (offset > total / 2) offset -= total;
+    if (offset < -total / 2) offset += total;
+
+    const abs = Math.abs(offset);
+    if (abs > VISIBLE_SIDES) return null; // hidden
+
+    // Map offset (-3..3) to slot index (0..6)
+    const slotIdx = offset + VISIBLE_SIDES;
+    return { slot: FAN_SLOTS[slotIdx], offset, abs };
+  };
+
+  // ── Spread OUT: cards drop in one by one from above ──────────────────────────
   const doSpread = useCallback(() => {
     if (stateRef.current === "spread") return;
     stateRef.current = "spread";
     setSpread(true);
 
     gsap.to(headerRef.current, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
-    gsap.to(bottomRef.current, { opacity: 1, y: 0, duration: 0.5, delay: 0.8, ease: "power3.out" });
+    gsap.to(bottomRef.current, { opacity: 1, y: 0, duration: 0.5, delay: 0.6, ease: "power3.out" });
 
     const active = activeRef.current;
     const total  = skills.length;
 
-    // Drop order: center first, then left cards, then right cards — paisa-isa
-    const dropOrder = [0];
-    for (let d = 1; d <= VISIBLE; d++) { dropOrder.push(-d); dropOrder.push(d); }
+    // Build drop order: center first, then alternate outward
+    // so cards appear one by one like dealing cards
+    const dropOrder = [0]; // center offset
+    for (let d = 1; d <= VISIBLE_SIDES; d++) {
+      dropOrder.push(-d);
+      dropOrder.push(d);
+    }
 
     dropOrder.forEach((offset, dropIdx) => {
-      const cardIdx = ((active + offset) % total + total) % total;
-      const el      = cardsRef.current[cardIdx];
+      // Find the card with this offset
+      let cardIdx = ((active + offset) % total + total) % total;
+      const el = cardsRef.current[cardIdx];
       if (!el) return;
-      const slot = getSlot(offset);
 
+      const slotData = getSlotForCard(cardIdx, active);
+      if (!slotData) return;
+      const { slot } = slotData;
+
+      const targetX     = (slot.x / 100) * (CARD_W * 2.2);
+      const targetY     = slot.y;
+      const targetRot   = slot.rotate;
+      const targetScale = slot.scale;
+      const targetOpa   = slot.zIndex === 10 ? 1 : slot.scale * 0.95;
+
+      // Each card drops from high above
       gsap.fromTo(el,
         {
-          x:        slot.x,
-          y:        -700,
-          rotation: slot.rotate - 8,
-          scale:    slot.scale * 0.8,
-          opacity:  0,
-          zIndex:   slot.zIndex,
+          x: targetX,
+          y: -500,
+          rotation: targetRot * 0.3,
+          scale: targetScale * 0.8,
+          opacity: 0,
+          transformPerspective: 1200,
+          zIndex: slot.zIndex,
         },
         {
-          x:        slot.x,
-          y:        slot.y,
-          rotation: slot.rotate,
-          scale:    slot.scale,
-          opacity:  slot.opacity,
-          zIndex:   slot.zIndex,
-          duration: 0.72,
-          delay:    dropIdx * 0.11,   // paisa-isa drop
-          ease:     "bounce.out",
+          x: targetX,
+          y: targetY,
+          rotation: targetRot,
+          scale: targetScale,
+          opacity: targetOpa,
+          duration: 0.65,
+          delay: dropIdx * 0.12, // stagger: each card drops after the previous
+          ease: "bounce.out",
+          zIndex: slot.zIndex,
+          clearProps: "none",
         }
       );
     });
 
     startTimer();
-  }, [startTimer]);
+  }, [startTimer]); // eslint-disable-line
 
-  // ── Page OUT: cards fly up paisa-isa ─────────────────────────────────────────
+  // ── Gather IN: cards fly back up one by one ──────────────────────────────────
   const doGather = useCallback(() => {
     if (stateRef.current === "gathered") return;
     stateRef.current = "gathered";
@@ -229,64 +267,76 @@ const Skills = () => {
     const active = activeRef.current;
     const total  = skills.length;
 
-    // Fly out: outermost first, center last
+    // Outer cards fly out first, center last
     const flyOrder = [];
-    for (let d = VISIBLE; d > 0; d--) { flyOrder.push(-d); flyOrder.push(d); }
-    flyOrder.push(0);
+    for (let d = VISIBLE_SIDES; d >= 0; d--) {
+      if (d === 0) { flyOrder.push(0); continue; }
+      flyOrder.push(-d);
+      flyOrder.push(d);
+    }
 
     flyOrder.forEach((offset, flyIdx) => {
-      const cardIdx = ((active + offset) % total + total) % total;
-      const el      = cardsRef.current[cardIdx];
+      let cardIdx = ((active + offset) % total + total) % total;
+      const el = cardsRef.current[cardIdx];
       if (!el) return;
-      const slot = getSlot(offset);
+
+      const slotData = getSlotForCard(cardIdx, active);
+      if (!slotData) return;
+      const { slot } = slotData;
+      const targetX = (slot.x / 100) * (CARD_W * 2.2);
 
       gsap.to(el, {
-        x:        slot.x,
-        y:        -700,
-        rotation: slot.rotate - 8,
-        scale:    slot.scale * 0.8,
-        opacity:  0,
-        duration: 0.42,
-        delay:    flyIdx * 0.07,
-        ease:     "power2.in",
+        x: targetX,
+        y: -500,
+        opacity: 0,
+        rotation: slot.rotate * 0.3,
+        scale: slot.scale * 0.8,
+        duration: 0.4,
+        delay: flyIdx * 0.07,
+        ease: "power2.in",
       });
     });
 
-    setTimeout(() => setSpread(false), 900);
-  }, []);
+    setTimeout(() => setSpread(false), 700);
+  }, []); // eslint-disable-line
 
-  // ── ScrollTrigger ─────────────────────────────────────────────────────────────
+  // ── ScrollTrigger ────────────────────────────────────────────────────────────
   useEffect(() => {
     gsap.set(headerRef.current, { opacity: 0, y: 40 });
     gsap.set(bottomRef.current, { opacity: 0, y: 20 });
 
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
-      start:   "top 70%",
-      end:     "bottom 30%",
-      onEnter:      () => doSpread(),
-      onLeave:      () => doGather(),
-      onEnterBack:  () => doSpread(),
-      onLeaveBack:  () => doGather(),
+      start: "top 70%",
+      end:   "bottom 30%",
+      onEnter:     () => doSpread(),
+      onLeave:     () => doGather(),
+      onEnterBack: () => doSpread(),
+      onLeaveBack: () => doGather(),
     });
 
-    return () => { trigger.kill(); clearInterval(timerRef.current); };
+    return () => {
+      trigger.kill();
+      clearInterval(timerRef.current);
+    };
   }, [doSpread, doGather]);
 
-  // ── CSS style for steady carousel switching (after spread) ───────────────────
+  // ── Fan layout style for steady carousel switching ───────────────────────────
   const getFanStyle = (i) => {
     if (!spread) return {};
-    const total  = skills.length;
-    let offset   = i - activeIndex;
-    if (offset > total / 2)  offset -= total;
-    if (offset < -total / 2) offset += total;
-    const abs = Math.abs(offset);
-    if (abs > VISIBLE) return { opacity: 0, pointerEvents: "none", zIndex: 0 };
-    const slot = getSlot(offset);
+
+    const result = getSlotForCard(i, activeIndex);
+    if (!result) return { opacity: 0, pointerEvents: "none" };
+
+    const { slot } = result;
+    const targetX   = (slot.x / 100) * (CARD_W * 2.2);
+    const targetOpa = slot.zIndex === 10 ? 1 : slot.scale * 0.95;
+
     return {
-      transform: `translateX(${slot.x}px) translateY(${slot.y}px) rotate(${slot.rotate}deg) scale(${slot.scale})`,
-      opacity:   slot.opacity,
+      transform: `translateX(${targetX}px) translateY(${slot.y}px) rotate(${slot.rotate}deg) scale(${slot.scale})`,
+      opacity:   targetOpa,
       zIndex:    slot.zIndex,
+      filter:    slot.zIndex === 10 ? "none" : `blur(${(VISIBLE_SIDES - result.abs + 1) < 2 ? 2 : 0.5}px)`,
     };
   };
 
@@ -324,15 +374,16 @@ const Skills = () => {
           </h2>
         </div>
 
-        {/* Dragon-style slanted card spread */}
+        {/* Fan Carousel */}
         <div
+          ref={carouselRef}
           style={{
-            position:  "relative",
-            width:     "100%",
-            height:    `${CARD_H + 240}px`,
-            display:   "flex",
+            position: "relative",
+            width: "100%",
+            height: `${CARD_H + 180}px`,
+            display: "flex",
             justifyContent: "center",
-            alignItems:     "center",
+            alignItems: "center",
           }}
         >
           {skills.map((skill, i) => {
@@ -345,21 +396,22 @@ const Skills = () => {
                 ref={el => cardsRef.current[i] = el}
                 onClick={() => spread && handleClick(i)}
                 style={{
-                  position:    "absolute",
-                  width:       `${CARD_W}px`,
-                  height:      `${CARD_H}px`,
-                  left:        "50%",
-                  top:         "50%",
-                  marginLeft:  `-${CARD_W / 2}px`,
-                  marginTop:   `-${CARD_H / 2}px`,
-                  transformOrigin: "center center",
+                  position: "absolute",
+                  width:  `${CARD_W}px`,
+                  height: `${CARD_H}px`,
+                  left:   "50%",
+                  top:    "50%",
+                  marginLeft: `-${CARD_W / 2}px`,
+                  marginTop:  `-${CARD_H / 2}px`,
+                  transformOrigin: "center bottom",
+                  // CSS transition only for carousel switching (not GSAP phases)
                   transition: spread
-                    ? "transform 0.5s cubic-bezier(0.34,1.2,0.64,1), opacity 0.4s ease"
+                    ? "transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease, filter 0.4s ease"
                     : "none",
                   cursor: "pointer",
                   ...(spread
                     ? fanStyle
-                    : { opacity: 0, transform: "translateY(-700px) rotate(-20deg) scale(0.7)" }),
+                    : { opacity: 0, transform: "translateY(-500px) scale(0.7)" }),
                 }}
               >
                 <CardFace skill={skill} isCenter={isCenter} />
@@ -368,7 +420,7 @@ const Skills = () => {
           })}
         </div>
 
-        {/* Bottom controls */}
+        {/* Name + level + dots + pills */}
         <div ref={bottomRef}>
           <div style={{ textAlign: "center", marginTop: "2rem" }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "1.7rem", fontWeight: 700, color: "#ffffff", lineHeight: 1, marginBottom: "4px", transition: "all 0.3s ease" }}>
@@ -382,9 +434,12 @@ const Skills = () => {
           <div style={{ display: "flex", gap: "8px", alignItems: "center", justifyContent: "center", marginTop: "1.5rem" }}>
             {skills.map((_, i) => (
               <div key={i} onClick={() => handleClick(i)} style={{
-                width: i === activeIndex ? "24px" : "6px", height: "6px", borderRadius: "3px",
+                width: i === activeIndex ? "24px" : "6px",
+                height: "6px",
+                borderRadius: "3px",
                 background: i === activeIndex ? "#0066FF" : "rgba(0,102,255,0.25)",
-                transition: "all 0.3s ease", cursor: "pointer",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
               }} />
             ))}
           </div>
